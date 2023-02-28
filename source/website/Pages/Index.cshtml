@@ -1,0 +1,60 @@
+﻿@page
+@model IndexModel
+@{
+    ViewData["Title"] = "Home page";
+}
+
+<div>
+    <h1 class="display-4">Global Lock Demo</h1>
+    <p>This demo showcases how to implement Global Locks using Cosmos DB.</p>
+    <section>
+        <form method="post" class="form-horizontal">
+            @Html.AntiForgeryToken()
+            <fieldset>
+            <legend>Create New Lock</legend>
+            <label for="LockName">Lock Name:</label>
+            <input name="LockName" type="text">
+            <label for="OwnerId">Owner ID:</label>
+            <input name="OwnerId" type="text">
+        <!--<label for="TTL">TTL:</label>-->
+        <!--<input name="TTL" type="text">-->
+            <input type="submit" />
+            </fieldset>
+        </form>
+        @if (!string.IsNullOrEmpty(Model.ErrorMessage))
+        { 
+            <div class="alert alert-danger">
+                <p>@Model.ErrorMessage</p>
+        </div>
+        }
+    </section>
+    <h2>Current Locks</h2>
+    <table>
+        <thead>
+            <tr>
+                <th>LockName</th>
+                <th>ClientId</th>
+                <th>Token</th>
+                <!--<th>TTL</th>-->
+                <!--<th>Ts</th>-->
+                <th>ETag</th>
+            </tr>
+        </thead>
+        <tbody>
+        @foreach (var gLock in Model.Locks)
+            {
+                <tr>
+                    <td>@gLock.LockName</td>
+                    <td>@gLock.OwnerId</td>                    
+                    <td>@gLock.FenceToken</td>
+                    <!--<td>gLock.Ttl</td>-->
+                    <!--<td>gLock.Ts</td>-->
+                    <td>@gLock.Etag</td>
+                    <td>                        
+                        <a href="/Lock?lockName=@Html.Raw(@gLock.LockName)&clientId=@Html.Raw(gLock.OwnerId)">Release</a>&nbsp;&nbsp;
+                    </td>
+                </tr>
+            }
+        </tbody>
+    </table>
+</div>
